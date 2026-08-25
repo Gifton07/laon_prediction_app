@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Approval Prediction | ML Model UI</title>
+  
+  <!-- CSS & Fonts -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header>
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="brand-logo">
+          <div class="brand-icon">⚡</div>
+          <div>LoanRisk<span class="text-gradient">.AI</span></div>
+        </a>
+        <div class="model-status-pill">
+          <span class="status-dot"></span>
+          <span>Model Online • 98.33% Accuracy</span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="main-wrapper">
+
+    <!-- Hero Header -->
+    <div class="hero-section">
+      <h1 class="hero-title">
+        Loan Approval <span class="text-gradient">Predictor</span>
+      </h1>
+      <p class="hero-subtitle">
+        Enter the applicant's financial details below to get an instant ML-powered loan risk prediction and approval score.
+      </p>
+    </div>
+
+    <!-- Main 2-Column Interface: Inputs & Output -->
+    <div class="workspace-grid">
+
+      <!-- Left Column: Input Form -->
+      <article class="glass-panel">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span>📋</span> Applicant Information
+          </h2>
+          <select id="currency" class="currency-select">
+            <option value="INR" selected>INR (₹)</option>
+            <option value="USD">USD ($)</option>
+          </select>
+        </div>
+
+        <div class="card-body">
+          
+          <!-- Sample Presets -->
+          <div class="presets-bar">
+            <div class="presets-label">⚡ Quick Sample Profiles:</div>
+            <div id="presetButtonsContainer" class="preset-buttons">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <form id="loanForm" class="form-grid">
+            
+            <!-- Age -->
+            <div class="form-group">
+              <div class="form-label">
+                <span>Age</span>
+                <span id="lbl_age" class="label-value">30 yrs</span>
+              </div>
+              <input type="number" id="age" name="age" class="form-input" min="18" max="80" value="30" required>
+              <input type="range" id="age_slider" class="range-slider" min="18" max="80" value="30">
+            </div>
+
+            <!-- Gender -->
+            <div class="form-group">
+              <div class="form-label">Gender</div>
+              <select id="gender" name="gender" class="form-select">
+                <option value="male" selected>Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+
+            <!-- Annual Income -->
+            <div class="form-group full-width">
+              <div class="form-label">
+                <span>Annual Person Income</span>
+                <span id="lbl_person_income" class="label-value">₹4,200,000</span>
+              </div>
+              <input type="number" id="person_income" name="person_income" class="form-input" min="100000" max="20000000" step="50000" value="4200000" required>
+              <input type="range" id="person_income_slider" class="range-slider" min="400000" max="15000000" step="100000" value="4200000">
+            </div>
+
+            <!-- Home Ownership -->
+            <div class="form-group">
+              <div class="form-label">Home Ownership</div>
+              <select id="home_ownership" name="home_ownership" class="form-select">
+                <option value="RENT">Rent</option>
+                <option value="MORTGAGE" selected>Mortgage</option>
+                <option value="OWN">Own</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+
+            <!-- Previous Loan Default -->
+            <div class="form-group">
+              <div class="form-label">Previous Default?</div>
+              <select id="previous_loan" name="previous_loan" class="form-select">
+                <option value="No" selected>No (Clean Record)</option>
+                <option value="Yes">Yes (Has Default)</option>
+              </select>
+            </div>
+
+            <!-- Loan Amount -->
+            <div class="form-group full-width">
+              <div class="form-label">
+                <span>Requested Loan Amount</span>
+                <span id="lbl_loan_amount" class="label-value">₹450,000</span>
+              </div>
+              <input type="number" id="loan_amount" name="loan_amount" class="form-input" min="30000" max="950000" step="10000" value="450000" required>
+              <input type="range" id="loan_amount_slider" class="range-slider" min="30000" max="950000" step="10000" value="450000">
+            </div>
+
+            <!-- Dynamic Loan Ratio -->
+            <div class="form-group full-width" style="margin-top: -0.4rem; margin-bottom: 0.4rem;">
+              <div class="form-label" style="font-size: 0.8rem;">
+                <span>Loan-to-Income Ratio</span>
+                <span id="calculated_ratio" style="color: var(--accent-cyan); font-weight: 700;">10.7%</span>
+              </div>
+              <div class="ratio-track">
+                <div id="calculated_ratio_bar" class="ratio-fill" style="width: 10.7%;"></div>
+              </div>
+            </div>
+
+            <!-- Interest Rate -->
+            <div class="form-group">
+              <div class="form-label">
+                <span>Interest Rate (%)</span>
+                <span id="lbl_loan_interest_rate" class="label-value">9.2%</span>
+              </div>
+              <input type="number" id="loan_interest_rate" name="loan_interest_rate" class="form-input" min="5.0" max="22.0" step="0.1" value="9.2" required>
+              <input type="range" id="loan_interest_rate_slider" class="range-slider" min="5.0" max="22.0" step="0.1" value="9.2">
+            </div>
+
+            <!-- Credit Score -->
+            <div class="form-group">
+              <div class="form-label">
+                <span>Credit Score</span>
+                <span id="lbl_credit_score" class="label-value">690 pts</span>
+              </div>
+              <input type="number" id="credit_score" name="credit_score" class="form-input" min="390" max="850" value="690" required>
+              <input type="range" id="credit_score_slider" class="range-slider" min="390" max="850" value="690">
+            </div>
+
+            <!-- Credit History -->
+            <div class="form-group full-width">
+              <div class="form-label">
+                <span>Credit History Length</span>
+                <span id="lbl_credit_history" class="label-value">6 yrs</span>
+              </div>
+              <input type="number" id="credit_history" name="credit_history" class="form-input" min="1" max="30" value="6" required>
+              <input type="range" id="credit_history_slider" class="range-slider" min="1" max="30" value="6">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="btnPredict" class="btn-predict">
+              <span>🎯</span> <span id="btnPredictText">Predict Loan Approval</span>
+            </button>
+
+          </form>
+        </div>
+      </article>
+
+      <!-- Right Column: Output Card -->
+      <article class="glass-panel">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span>🛡️</span> Prediction Results
+          </h2>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Real-Time ML Output</span>
+        </div>
+
+        <div class="card-body">
+          <div class="prediction-display">
+            
+            <!-- Gauge Dial -->
+            <div class="gauge-container">
+              <canvas id="riskGaugeCanvas"></canvas>
+              <div class="gauge-center-text">
+                <span id="gaugeScoreText" class="gauge-score">--%</span>
+                <span class="gauge-label">Approval Prob.</span>
+              </div>
+            </div>
+
+            <!-- Status Badge -->
+            <div id="statusBadge" class="status-badge-lg badge-emerald">
+              Evaluating...
+            </div>
+
+            <!-- Description -->
+            <p id="resultDescription" class="result-description">
+              Fill in applicant details and click predict to assess loan approval risk.
+            </p>
+
+            <!-- Probability Breakdown Bars -->
+            <div class="prob-breakdown-box">
+              <div class="prob-row">
+                <span>Approval Confidence</span>
+                <span id="txtProbApproved" style="font-weight: 700; color: var(--accent-emerald);">--%</span>
+              </div>
+              <div class="prob-row">
+                <span>Rejection Risk</span>
+                <span id="txtProbRejected" style="font-weight: 700; color: var(--accent-rose);">--%</span>
+              </div>
+            </div>
+
+            <!-- Key Feature Risk Drivers -->
+            <div class="drivers-container">
+              <div class="drivers-title">
+                <span>🔍</span> Key Risk Factors & Analysis
+              </div>
+              <div id="keyDriversList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>ML Loan Prediction Project Showcase</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
